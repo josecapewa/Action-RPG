@@ -10,9 +10,13 @@ public partial class Player : CharacterBody2D
 	Vector2 velocity = Vector2.Zero;
 	
 	AnimationPlayer animationPlayer;
+	AnimationTree animationTree;
+	AnimationNodeStateMachinePlayback animationState;
 	
 	public override void _Ready(){
-		animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");;
+		animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+		animationTree = GetNode<AnimationTree>("AnimationTree");
+		animationState = animationTree.Get("parameters/playback").Obj as AnimationNodeStateMachinePlayback;;
 	}
 		
 	public override void _PhysicsProcess(double delta)
@@ -23,17 +27,15 @@ public partial class Player : CharacterBody2D
 		input = input.Normalized();
 		
 		if(input!=Vector2.Zero){
-			if(input.X > 0){
-				animationPlayer.Play("RunRight");
-			} else{
-				animationPlayer.Play("RunLeft");
-			}
+			animationTree.Set("parameters/Idle/blend_position", input);
+			animationTree.Set("parameters/Run/blend_position", input);
+			animationState.Travel("Run");
 			velocity = velocity.MoveToward(input * MAX_SPEED, ACCELERATION * (float)delta);
 		} else{
-			animationPlayer.Play("IdleRight");
+			animationState.Travel("Idle");
 			velocity = velocity.MoveToward(Vector2.Zero, FRICTION * (float)delta);
 		}
-		GD.Print(velocity);
+		
 		Velocity = velocity;
 		MoveAndSlide();
 	}
