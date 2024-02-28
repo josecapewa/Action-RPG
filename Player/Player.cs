@@ -26,7 +26,7 @@ public partial class Player : CharacterBody2D
 		animationState = animationTree.Get("parameters/playback").Obj as AnimationNodeStateMachinePlayback;;
 	}
 		
-	public override void _PhysicsProcess(double delta)
+	public override void _Process(double delta)
 	{
 		switch(state){
 			case 0:
